@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  />
+  <title>Musi | Construye tu escenario</title>
+  <meta
+    name="description"
+    content="Minijuego educativo donde construyes un escenario artístico eligiendo fondo, personajes, objetos, luces y elementos decorativos."
+  />
+  <meta name="theme-color" content="#7c5cff" />
+
+  <!-- Tipografías -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap"
+    rel="stylesheet"
+  />
+
+  <!-- Estilos -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="game-shell">
+    <!-- Fondo decorativo -->
+    <div class="bg-blur bg-blur-1"></div>
+    <div class="bg-blur bg-blur-2"></div>
+    <div class="bg-stars" aria-hidden="true"></div>
+
+    <!-- Header -->
+    <header class="topbar">
+      <div class="brand">
+        <div class="brand-badge">🎭</div>
+        <div class="brand-copy">
+          <p class="eyebrow">Musi · Minijuego creativo</p>
+          <h1>Construye tu escenario</h1>
+        </div>
+      </div>
+
+      <div class="topbar-actions">
+        <button id="btnHowToPlay" class="btn btn-ghost" type="button">
+          ¿Cómo jugar?
+        </button>
+        <button id="btnReset" class="btn btn-soft" type="button">
+          Reiniciar
+        </button>
+      </div>
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="main-layout">
+      <!-- Panel izquierdo -->
+      <aside class="panel sidebar left-panel" aria-label="Herramientas del escenario">
+        <section class="panel-section intro-card">
+          <span class="panel-chip">Creatividad + juego</span>
+          <h2>Arma una escena artística</h2>
+          <p>
+            Escoge un fondo, agrega personajes, objetos y luces para crear un
+            escenario único. Mezcla elementos y dale vida a tu presentación.
+          </p>
+        </section>
+
+        <section class="panel-section category-section">
+          <div class="section-heading">
+            <h3>Categorías</h3>
+            <p>Selecciona qué quieres añadir</p>
+          </div>
+
+          <div class="category-tabs" role="tablist" aria-label="Categorías de construcción">
+            <button class="category-tab is-active" data-category="fondos" type="button" role="tab" aria-selected="true">
+              Fondos
+            </button>
+            <button class="category-tab" data-category="personajes" type="button" role="tab" aria-selected="false">
+              Personajes
+            </button>
+            <button class="category-tab" data-category="objetos" type="button" role="tab" aria-selected="false">
+              Objetos
+            </button>
+            <button class="category-tab" data-category="luces" type="button" role="tab" aria-selected="false">
+              Luces
+            </button>
+            <button class="category-tab" data-category="decoracion" type="button" role="tab" aria-selected="false">
+              Decoración
+            </button>
+          </div>
+        </section>
+
+        <section class="panel-section library-section">
+          <div class="section-heading">
+            <h3>Biblioteca de elementos</h3>
+            <p>Toca uno para agregarlo al escenario</p>
+          </div>
+
+          <div id="assetGrid" class="asset-grid" aria-live="polite">
+            <!-- JS llena esto -->
+          </div>
+        </section>
+      </aside>
+
+      <!-- Centro: escenario -->
+      <section class="stage-area" aria-label="Zona de construcción del escenario">
+        <div class="stage-topbar">
+          <div class="stage-status">
+            <span class="status-pill">Modo creativo</span>
+            <p id="stageHint">Empieza eligiendo un fondo para tu escenario.</p>
+          </div>
+
+          <div class="stage-tools">
+            <button id="btnUndo" class="btn btn-ghost" type="button">
+              Deshacer
+            </button>
+            <button id="btnClearStage" class="btn btn-ghost danger" type="button">
+              Limpiar
+            </button>
+          </div>
+        </div>
+
+        <div class="stage-frame">
+          <div id="stageCanvas" class="stage-canvas">
+            <!-- Fondo -->
+            <div id="stageBackground" class="stage-background default-bg"></div>
+
+            <!-- Piso -->
+            <div class="stage-floor"></div>
+            <div class="stage-front-glow"></div>
+
+            <!-- Capas -->
+            <div id="stageLightsLayer" class="stage-layer stage-lights"></div>
+            <div id="stageObjectsLayer" class="stage-layer stage-objects"></div>
+            <div id="stageCharactersLayer" class="stage-layer stage-characters"></div>
+            <div id="stageDecorLayer" class="stage-layer stage-decor"></div>
+
+            <!-- Mensaje vacío -->
+            <div id="emptyStageMessage" class="empty-stage-message">
+              <div class="empty-icon">✨</div>
+              <h2>Tu escenario está vacío</h2>
+              <p>Agrega elementos desde la izquierda para comenzar a construir.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="stage-footer">
+          <div class="progress-box">
+            <span class="mini-label">Elementos usados</span>
+            <strong id="elementsCount">0</strong>
+          </div>
+
+          <div class="progress-box">
+            <span class="mini-label">Fondo actual</span>
+            <strong id="currentBackgroundName">Ninguno</strong>
+          </div>
+
+          <div class="progress-box highlight">
+            <span class="mini-label">Meta creativa</span>
+            <strong id="creativeGoal">Crea un escenario que cuente una historia</strong>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel derecho -->
+      <aside class="panel sidebar right-panel" aria-label="Controles y vista del diseño">
+        <section class="panel-section selected-section">
+          <div class="section-heading">
+            <h3>Elemento seleccionado</h3>
+            <p>Edita lo que agregaste al escenario</p>
+          </div>
+
+          <div id="selectedCard" class="selected-card is-empty">
+            <div class="selected-preview">🎨</div>
+            <div class="selected-copy">
+              <h4>Nada seleccionado</h4>
+              <p>Haz clic sobre un elemento del escenario para moverlo o editarlo.</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel-section controls-section">
+          <div class="section-heading">
+            <h3>Controles rápidos</h3>
+            <p>Ajusta la escena a tu gusto</p>
+          </div>
+
+          <div class="control-group">
+            <label for="scaleRange">Tamaño</label>
+            <input id="scaleRange" type="range" min="50" max="150" value="100" />
+          </div>
+
+          <div class="control-group">
+            <label for="rotateRange">Rotación</label>
+            <input id="rotateRange" type="range" min="-45" max="45" value="0" />
+          </div>
+
+          <div class="control-group">
+            <label for="opacityRange">Opacidad</label>
+            <input id="opacityRange" type="range" min="20" max="100" value="100" />
+          </div>
+
+          <div class="control-row">
+            <button id="btnBringFront" class="btn btn-soft" type="button">
+              Traer al frente
+            </button>
+            <button id="btnSendBack" class="btn btn-soft" type="button">
+              Enviar atrás
+            </button>
+          </div>
+
+          <div class="control-row">
+            <button id="btnDuplicate" class="btn btn-soft" type="button">
+              Duplicar
+            </button>
+            <button id="btnDelete" class="btn btn-soft danger" type="button">
+              Eliminar
+            </button>
+          </div>
+        </section>
+
+        <section class="panel-section mission-section">
+          <div class="section-heading">
+            <h3>Reto creativo</h3>
+            <p>Una idea para inspirarte</p>
+          </div>
+
+          <div class="mission-card">
+            <span class="mission-icon">🌟</span>
+            <p id="missionText">
+              Diseña un escenario para una presentación donde haya música, color y
+              al menos un personaje principal.
+            </p>
+          </div>
+        </section>
+
+        <section class="panel-section action-section">
+          <button id="btnSaveScene" class="btn btn-primary btn-big" type="button">
+            Guardar creación
+          </button>
+          <button id="btnRandomScene" class="btn btn-secondary btn-big" type="button">
+            Escena sorpresa
+          </button>
+        </section>
+      </aside>
+    </main>
+  </div>
+
+  <!-- Modal ayuda -->
+  <div id="howToPlayModal" class="modal" aria-hidden="true">
+    <div class="modal-backdrop" data-close-modal></div>
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="howToPlayTitle">
+      <button class="modal-close" id="btnCloseModal" type="button" aria-label="Cerrar ayuda">
+        ✕
+      </button>
+
+      <div class="modal-header">
+        <span class="modal-badge">Guía rápida</span>
+        <h2 id="howToPlayTitle">Cómo jugar</h2>
+      </div>
+
+      <div class="modal-body">
+        <ol class="steps-list">
+          <li>Elige una categoría como fondos, personajes u objetos.</li>
+          <li>Haz clic en un elemento para agregarlo al escenario.</li>
+          <li>Selecciona cualquier elemento dentro del escenario para editarlo.</li>
+          <li>Prueba tamaños, rotación y posición para que tu escena se vea increíble.</li>
+          <li>Guarda tu creación o genera una escena sorpresa.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- Script -->
+  <script src="game.js"></script>
+</body>
+</html>
